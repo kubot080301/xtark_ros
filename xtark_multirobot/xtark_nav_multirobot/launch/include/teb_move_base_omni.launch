@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="namespace" default="robot0"/>
+  <node ns="$(arg namespace)"  pkg="move_base" type="move_base" respawn="true" name="move_base" output="screen" clear_params="true">
+	  <rosparam file="$(find xtark_nav_multirobot)/config/omni/costmap_common_params.yaml" command="load" ns="global_costmap" subst_value="True" />
+	  <rosparam file="$(find xtark_nav_multirobot)/config/omni/costmap_common_params.yaml" command="load" ns="local_costmap" subst_value="True"/>
+          <rosparam file="$(find xtark_nav_multirobot)/config/omni/local_costmap_params.yaml" command="load"   subst_value="True"/>
+          <rosparam file="$(find xtark_nav_multirobot)/config/omni/global_costmap_params.yaml" command="load"  subst_value="True"/>
+          <rosparam file="$(find xtark_nav_multirobot)/config/omni/base_global_planner_param.yaml" command="load"  subst_value="True"/>
+          <rosparam file="$(find xtark_nav_multirobot)/config/omni/teb_local_planner_params.yaml" command="load"/>
+          <param name="TebLocalPlannerROS/map_frame" value="$(arg namespace)/odom"/>
+          <rosparam file="$(find xtark_nav_multirobot)/config/omni/move_base_params.yaml" command="load" subst_value="True"/>
+  </node>
+</launch>

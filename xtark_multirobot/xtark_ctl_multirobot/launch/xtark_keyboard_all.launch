@@ -1,0 +1,9 @@
+<launch>
+    <param name="use_sim_time" value="false"/>
+    <arg name="namespace" default="/"/>
+    <!-- 启动键盘遥控节点 -->
+    <group ns="$(arg namespace)">
+    	<node name="xtark_twist_keyboard" pkg="xtark_ctl_multirobot" type="xtark_twist_keyboard.py" output="screen" respawn="false"/>
+    </group>
+    	<node name="xtark_cmd_mux" pkg="xtark_ctl_multirobot" type="cmd_mux.py" output="screen" respawn="false"/>
+</launch>

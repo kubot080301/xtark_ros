@@ -1,0 +1,51 @@
+<?xml version="1.0" ?>
+<launch>
+	<arg name="resolution" default="480p"/>
+	<arg name="namespace"  default="robot0"/>
+	<arg name="robot_type" value="$(optenv ROBOT_TYPE 4WD)"/>
+
+	<!-- 启动底盘及激光雷达驱动包 -->
+	<include file="$(find xtark_driver_multirobot)/launch/xtark_bringup_multirobot.launch" >
+		<arg name="namespace" value="$(arg namespace)"/>
+	</include>
+	
+	<arg name="initial_pose_x" default="0.0"/>
+	<arg name="initial_pose_y" default="0.0"/>
+	<arg name="initial_pose_a" default="0.0"/>
+
+	<group if="$(eval arg('robot_type') == 'MEC')">
+		<!-- 启动AMCL 自适应蒙特卡洛定位算法包 -->
+		<include file="$(find xtark_nav_multirobot)/launch/include/amcl_omni.launch">
+			<arg name="namespace" value="$(arg namespace)"/>
+			<arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+			<arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+			<arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+			<arg name="odom_frame_id"  value="$(arg namespace)/odom"/>
+			<arg name="base_frame_id"  value="$(arg namespace)/base_footprint"/>	
+		</include>
+		<!-- 启动路径规划算法包 -->
+		<include file="$(find xtark_nav_multirobot)/launch/include/teb_move_base_omni.launch">
+			<arg name="namespace" value="$(arg namespace)"/>
+		</include>
+	</group>
+	<group if="$(eval arg('robot_type') == '4WD')">
+		<include file="$(find xtark_nav_multirobot)/launch/include/amcl_base.launch">
+			<arg name="namespace" value="$(arg namespace)"/>
+			<arg name="initial_pose_x" value="$(arg initial_pose_x)"/>
+			<arg name="initial_pose_y" value="$(arg initial_pose_y)"/>
+			<arg name="initial_pose_a" value="$(arg initial_pose_a)"/>
+			<arg name="odom_frame_id"  value="$(arg namespace)/odom"/>
+			<arg name="base_frame_id"  value="$(arg namespace)/base_footprint"/>	
+		</include>
+		<!-- 启动路径规划算法包 -->
+		<include file="$(find xtark_nav_multirobot)/launch/include/teb_move_base.launch">
+			<arg name="namespace" value="$(arg namespace)"/>
+		</include>
+	</group>
+	<group ns="$(arg namespace)">
+		<node  name="robot_pose_publisher" pkg="robot_pose_publisher" type="robot_pose_publisher">
+			<param name="base_frame" type="string" value="$(arg namespace)/base_footprint"/>
+		</node>
+	</group>
+
+</launch>

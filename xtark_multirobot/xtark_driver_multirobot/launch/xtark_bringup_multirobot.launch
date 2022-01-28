@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<launch>
+    <param name="use_sim_time" value="false"/>
+    <arg name="lidar_type" value="$(optenv LIDAR_TYPE XAS)"/>
+
+    <!-- 设置当前机器人命名空间 -->
+
+    <arg name="namespace" default="robot0"/>
+
+    <!-- 启动xtark_driver驱动包 -->
+    <group ns="$(arg namespace)">
+    	<node name="xtark_driver" pkg="xtark_driver" type="xtark_driver" output="screen" respawn="true">
+        	<rosparam file="$(find xtark_driver)/config/xtark_params.yaml" command="load"/>
+    		<remap from="odom" to="odom"/>
+		<param name="odom_frame" value="$(arg namespace)/odom"/>
+		<param name="base_frame" value="$(arg namespace)/base_footprint"/>
+		<param name="imu_frame" value="$(arg namespace)/base_imu_link"/>
+		<param name="publish_odom_transform" value="True"/>
+	</node>
+   	<node  pkg="tf" type="static_transform_publisher" name="base_footprint_to_imu" args="-0.05 0 0.05 -1.57 0 0 $(arg namespace)/base_footprint $(arg namespace)/base_imu_link 20"/>
+</group>
+	<include file="$(find xtark_driver_multirobot)/launch/xtark_lidar.launch">
+		<arg name="namespace" value="$(arg namespace)"/>
+	</include>
+	<include file="$(find xtark_driver_multirobot)/launch/xtark_camera.launch">
+		<arg name="namespace" value="$(arg namespace)"/>
+	</include>
+</launch>
